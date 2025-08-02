@@ -10,13 +10,17 @@
 	<RepositoryUrl>
 	  https://github.com/SampleMicroserviceShop/Catalog.Service
 	</RepositoryUrl>
+	<UserSecretsId>3ddfe31c-7a0e-4212-87ec-5d83151b4336</UserSecretsId>
+	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	<DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
 
 
-	  <PackageReference Include="Common.Library" Version="1.0.5" />
-	  <PackageReference Include="Catalog.Contracts" Version="1.0.1" />
+	  <PackageReference Include="Common.Library" Version="1.0.6" />
+	  <PackageReference Include="Catalog.Contracts" Version="1.0.2" />
+	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
   </ItemGroup>
 

@@ -4,7 +4,7 @@ Sample Microservice Shop Catalog microservice.
 
 ## Create and publish package
 ```powershell
-$version="1.0.6"
+$version="1.0.2"
 $owner="SampleMicroserviceShop"
 dotnet pack --configuration Release -p:PackageVersion=$version -o ..\..\packages\$owner
 ```
@@ -18,10 +18,23 @@ dotnet nuget add source --username USERNAME --password $gh_pat --store-password-
 
  ## Push Package to GitHub
 ```powershell
-$version="1.0.6"
+$version="1.0.2"
 $gh_pat="[PAT HERE]"
 $owner="SampleMicroserviceShop"
 dotnet nuget push ..\..\packages\$owner\Catalog.Service.$version.nupkg --api-key $gh_pat --source "github"
 or
 dotnet nuget push ..\..\packages\$owner\Catalog.Contracts.$version.nupkg --api-key $gh_pat --source "github"
 ```
+
+## Build the docker image
+```powershell
+$env:GH_OWNER="SampleMicroserviceShop"
+$env:GH_PAT="[PAT HERE]"
+docker build --secret id=GH_OWNER --secret id=GH_PAT -t catalog.service:$version .
+```
+
+## Run the docker image
+```powershell
+docker run -it --rm -p 5000:5000 --name catalog -e MongoDbSettings__Host=mongo -e RabbitMQSettings__Host=rabbitmq --network infra_default catalog.service:$version
+```
+
