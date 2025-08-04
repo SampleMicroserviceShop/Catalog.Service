@@ -12,8 +12,10 @@ const string AllowedOriginSetting = "AllowedOrigin";
 var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
 builder.Services.AddMongo()
     .AddMongoRepository<Item>("items")
-    .AddMassTransitWithRabbitMq()
+    .AddMassTransitWithMessageBroker(builder.Configuration)
     .AddJwtBearerAuthentication();
+
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(Policies.Read, policy =>
