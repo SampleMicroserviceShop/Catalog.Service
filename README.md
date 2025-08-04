@@ -1,4 +1,4 @@
-## Catalog.Microservice
+# Catalog.Microservice
 Sample Microservice Shop Catalog microservice.
 
 ## General Variables
@@ -9,6 +9,7 @@ $owner="SampleMicroserviceShop"
 $gh_pat="[PAT HERE]"
 $cosmosDbConnString="[CONN STRING HERE]"
 $serviceBusConnString="[CONN STRING HERE]"
+$appname="MicroserviceShop"
 ```
 
 ## Create and publish package
@@ -37,6 +38,10 @@ $env:GH_OWNER="SampleMicroserviceShop"
 $env:GH_PAT="[PAT HERE]"
 docker build --secret id=GH_OWNER --secret id=GH_PAT -t catalog.service:$version .
 ```
+or with Azure Container Registry tag
+```
+docker build --secret id=GH_OWNER --secret id=GH_PAT -t "$appname.azurecr.io/catalog.service:$version"
+```
 
 ## Run the docker image
 ```powershell
@@ -48,4 +53,15 @@ docker run -it --rm -p 5000:5000 --name catalog -e MongoDbSettings__Host=mongo -
 docker run -it --rm -p 5000:5000 --name catalog -e MongoDbSettings__ConnectionString=$cosmosDbConnString \
  -e ServiceBusSettings__ConnectionString=$serviceBusConnString -e ServiceSettings__MessageBroker="SERVICEBUS" \
 --network infra_default catalog.service:$version
+```
+
+## Retag docker image to publish to Azure Container Registry
+```powershell
+docker tag catalog.service:$version "$appname.azurecr.io/catalog.service:$version"
+```
+
+## Publish the docker image to Azure Container Registry
+```powershell
+az acr login --name $appname
+docker push "$appname.azurecr.io/catalog.service:$version"
 ```
