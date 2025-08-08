@@ -4,6 +4,8 @@ using Common.Library.MassTransit;
 using Common.Library.Settings;
 using Common.Library.Identity;
 using Catalog.Service;
+using Common.Library.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 const string AllowedOriginSetting = "AllowedOrigin";
@@ -37,6 +39,8 @@ builder.Services.AddControllers(options =>
 });
 
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks()
+    .AddMongoDbHealthCheck();
 
 
 
@@ -55,6 +59,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapCustomHealthChecks();
 
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
 {
