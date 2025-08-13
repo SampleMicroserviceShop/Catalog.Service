@@ -3,13 +3,14 @@ Sample Microservice Shop Catalog microservice.
 
 ## General Variables
 ```powershell
-$version="1.0.3"
+$version="1.0.4"
 $contracts_version="1.0.2"
 $owner="SampleMicroserviceShop"
 $gh_pat="[PAT HERE]"
 $cosmosDbConnString="[CONN STRING HERE]"
 $serviceBusConnString="[CONN STRING HERE]"
 $appname="microshop"
+$namespace="catalog"
 ```
 
 ## Create and publish package
@@ -40,15 +41,14 @@ docker build --secret id=GH_OWNER --secret id=GH_PAT -t catalog.service:$version
 ```
 or with Azure Container Registry tag
 ```
-docker build --secret id=GH_OWNER --secret id=GH_PAT -t "$appname.azurecr.io/catalog.service:$version"
+docker build --secret id=GH_OWNER --secret id=GH_PAT -t "$appname.azurecr.io/catalog.service:$version" .
 ```
 
 ## Run the docker image
 ```powershell
 docker run -it --rm -p 5000:5000 --name catalog -e MongoDbSettings__Host=mongo -e RabbitMQSettings__Host=rabbitmq --network infra_default catalog.service:$version
 ```
-
-## Run the docker image - using ServiceBus ConnectionString
+ Run the docker image - using ServiceBus ConnectionString
 ```powershell
 docker run -it --rm -p 5000:5000 --name catalog -e MongoDbSettings__ConnectionString=$cosmosDbConnString \
  -e ServiceBusSettings__ConnectionString=$serviceBusConnString -e ServiceSettings__MessageBroker="SERVICEBUS" \
@@ -65,3 +65,7 @@ docker tag catalog.service:$version "$appname.azurecr.io/catalog.service:$versio
 az acr login --name $appname
 docker push "$appname.azurecr.io/catalog.service:$version"
 ```
+
+
+
+
