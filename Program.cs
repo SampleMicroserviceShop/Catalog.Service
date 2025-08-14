@@ -4,10 +4,13 @@ using Common.Library.MassTransit;
 using Common.Library.Settings;
 using Common.Library.Identity;
 using Catalog.Service;
+using Common.Library.Configuration;
 using Common.Library.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.ConfigureAzureKeyVault(builder.Environment);
+
 const string AllowedOriginSetting = "AllowedOrigin";
 // Add services to the container.
 
@@ -47,12 +50,21 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-
-//app.UseHttpsRedirection();
-app.UseCookiePolicy(new CookiePolicyOptions
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
 {
-    MinimumSameSitePolicy = SameSiteMode.Lax
-});
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseCors(_builder =>
+    {
+        _builder.WithOrigins(app.Configuration[AllowedOriginSetting])
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+
+}
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
@@ -62,17 +74,6 @@ app.MapControllers();
 
 app.MapCustomHealthChecks();
 
-if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Environment.IsProduction())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-app.UseCors(_builder =>
-{
-    _builder.WithOrigins(app.Configuration[AllowedOriginSetting])
-        .AllowAnyHeader()
-        .AllowAnyMethod();
-});
 
 
 

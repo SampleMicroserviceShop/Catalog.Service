@@ -3,7 +3,7 @@ Sample Microservice Shop Catalog microservice.
 
 ## General Variables
 ```powershell
-$version="1.0.4"
+$version="1.0.5"
 $contracts_version="1.0.2"
 $owner="SampleMicroserviceShop"
 $gh_pat="[PAT HERE]"
@@ -66,6 +66,43 @@ az acr login --name $appname
 docker push "$appname.azurecr.io/catalog.service:$version"
 ```
 
+## Create the Kubernetes namespace
+```powershell
+kubectl create namespace $namespace
+```
 
+## Create the Kubernetes pod
+```powershell
+kubectl apply -f .\Kubernetes\$namespace.yaml -n $namespace
+```
+other useful commands
+```powershell
+kubectl get pods -n $namespace -w
+kubectl get services -n $namespace
+kubectl logs [POD_NAME] -n $namespace -c $namespace
+kubectl delete pod [POD_NAME] -n $namespace
+```
+
+## Get AKS 
+```powershell
+kubectl get services -n $namespace
+```
+
+## Creating the Azure Managed Identity and granting it access to Key Vault secrets
+```powershell
+az identity create --resource-group $appname --name $namespace
+
+$IDENTITY_CLIENT_ID = az identity show -g $appname -n $namespace --query clientId -otsv
+
+$Object_Id = az ad sp show --id $IDENTITY_CLIENT_ID --query id -o tsv
+az role assignment create --assignee $Object_Id --role "Key Vault Secrets User" --scope $(az keyvault show -n $appname --query id -o tsv)
+```
+
+## Establish the federated identity credential
+```powershell
+$AKS_OIDC_ISSUER = az aks show -g $appname -n $appname --query oidcIssuerProfile.issuerUrl -otsv
+
+az identity federated-credential create --name $namespace --identity-name $namespace --resource-group $appname --issuer $AKS_OIDC_ISSUER --subject "system:serviceaccount:${namespace}:${namespace}-serviceaccount"
+```
 
 
