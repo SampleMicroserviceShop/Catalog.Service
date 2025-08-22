@@ -1,0 +1,14 @@
+microserviceName: "catalog"
+
+image:
+  repository: microshop.azurecr.io/catalog.service
+  tag: 1.0.5
+
+envVariables:
+  ServiceSettings__Authority : https://microshop.westus2.cloudapp.azure.com/identity-svc
+
+container:
+  port: 5000
+
+identityClientId: 8d48369a-994c-4722-8622-abe1a2222226
+
