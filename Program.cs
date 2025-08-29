@@ -6,6 +6,8 @@ using Common.Library.Identity;
 using Catalog.Service;
 using Common.Library.Configuration;
 using Common.Library.HealthChecks;
+using Common.Library.Logging;
+using Common.Library.OpenTelemetry;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +22,8 @@ builder.Services.AddMongo()
     .AddMassTransitWithMessageBroker(builder.Configuration)
     .AddJwtBearerAuthentication();
 
+builder.Services.AddSeqLogging(builder.Configuration)
+    .AddTracing(builder.Configuration);
 
 builder.Services.AddAuthorization(options =>
 {
