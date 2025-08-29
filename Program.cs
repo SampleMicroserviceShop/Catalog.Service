@@ -68,6 +68,8 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Enviro
 
 }
 
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
